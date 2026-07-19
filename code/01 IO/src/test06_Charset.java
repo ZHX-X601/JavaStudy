@@ -1,8 +1,7 @@
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
-public class test06 {
+public class test06_Charset {
     public static void main(String[] args) throws UnsupportedEncodingException {
         String s1="java你好";
         byte[] utf8 = s1.getBytes();//默认使用utf-8编码

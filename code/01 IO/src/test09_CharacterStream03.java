@@ -1,9 +1,9 @@
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class test09 {
+public class test09_CharacterStream03{
     public static void main(String[] args) throws IOException {
-        FileWriter fw = new FileWriter("day1 IO/字符.txt", true);//true 表示追加写入
+        FileWriter fw = new FileWriter("01 IO/字符.txt", true);//true 表示追加写入
         fw.write("hello world");
         fw.flush();//刷新缓冲区,将数据写入文件
 

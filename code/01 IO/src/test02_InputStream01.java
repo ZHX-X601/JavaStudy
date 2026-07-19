@@ -3,9 +3,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class test02 {
+public class test02_InputStream01 {
     public static void main(String[] args) throws IOException {
-        File file = new File("day1 IO/test.txt");
+        File file = new File("01 IO/test.txt");
         FileInputStream fis = new FileInputStream(file);
 
 //        逐个读取

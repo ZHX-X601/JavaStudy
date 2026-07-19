@@ -3,12 +3,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class test05 {
+public class test05_exception_handling {
     public static void main(String[] args) throws FileNotFoundException {
         long startTime = System.currentTimeMillis();
 
-        FileInputStream fis = new FileInputStream("day1 IO/Generic PnP Monitor (Area) 2026-07-18 06-20 PM.mp4");
-        FileOutputStream fos = new FileOutputStream("day1 IO/copy/test.mp4");
+        FileInputStream fis = new FileInputStream("01 IO/Generic PnP Monitor (Area) 2026-07-18 06-20 PM.mp4");
+        FileOutputStream fos = new FileOutputStream("01 IO/copy/test.mp4");
 
         // 用try-with-resources自动关闭流
         try (fis; fos) {

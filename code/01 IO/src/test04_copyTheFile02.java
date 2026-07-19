@@ -3,12 +3,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class test04 {
+public class test04_copyTheFile02{
     public static void main(String[] args) throws IOException {
         long startTime = System.currentTimeMillis();
 
-        FileInputStream fis = new FileInputStream("day1 IO/Generic PnP Monitor (Area) 2026-07-18 06-20 PM.mp4");
-        FileOutputStream fos = new FileOutputStream("day1 IO/copy/test.mp4");
+        FileInputStream fis = new FileInputStream("01 IO/Generic PnP Monitor (Area) 2026-07-18 06-20 PM.mp4");
+        FileOutputStream fos = new FileOutputStream("01 IO/copy/test.mp4");
 
         byte[] buffer = new byte[1024*1024*5];
 
