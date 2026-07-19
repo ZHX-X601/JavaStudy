@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />            
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="referrer" content="origin-when-cross-origin" />
+    <title>【RAG扫盲系列&#183;3】从零开始构建你的RAG项目第二弹：API 调用大模型问答 - Alkaid2077 - 博客园</title>
+    
+    <meta name="description" content="在大模型应用开发中，除了本地推理（如 vLLM、transformers），API 调用是更常见、更轻量的方式。本文以通义千问（DashScope 兼容 OpenAI API）为例，展示如何完成一次完整的 API 调用。 一、为什么选择 API 调用 轻量：无需本地部署 GPU，只需一行请求即可调用" />    
+    <meta property="og:description" content="在大模型应用开发中，除了本地推理（如 vLLM、transformers），API 调用是更常见、更轻量的方式。本文以通义千问（DashScope 兼容 OpenAI API）为例，展示如何完成一次完整的 API 调用。 一、为什么选择 API 调用 轻量：无需本地部署 GPU，只需一行请求即可调用" />
+    <meta property="og:image" content="https://assets.cnblogs.com/images/wechat-share.jpg" />    
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=_093K1IauZaMJCki_fFkstLGsXBv3j-89PhEnbXzi9Y" />
+    
+
+    <link id="MainCss" rel="stylesheet" href="/skins/blacklowkey/bundle-blacklowkey.min.css?v=QmhJuqutwsyRVPwV8wOHP8zM5sTwHe5vHM1HxnzZE-8" />
+        <link id="highlighter-theme-cnblogs" type="text/css" rel="stylesheet" href="/css/hljs/cnblogs.css?v=5J1NDtbnnIr2Rc2SdhEMlMxD4l9Eydj88B31E7_NhS4" />
+    
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/blacklowkey/bundle-blacklowkey-mobile.min.css?v=wEd7BnJNqQXyfaumo8ozL35obJU-KCAQ6YwcQD9bt2M" />
+    
+    <link id="favicon" rel="icon" type="image/x-icon" sizes="32x32" href="https://assets.cnblogs.com/favicon_v3_3.ico" />
+    <link id="favicon_svg" rel="icon" type="image/svg+xml" href="https://assets.cnblogs.com/favicon_v3_3.svg" />
+    <link rel="apple-touch-icon" href="https://assets.cnblogs.com/apple-touch-icon.png?v=2" />
+    <link rel="canonical" href="https://www.cnblogs.com/Alkaid2077/p/21169603" />
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/Alkaid2077/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/Alkaid2077/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/Alkaid2077/wlwmanifest.xml" />
+    
+    <script type="application/ld&#x2B;json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": "https://www.cnblogs.com/Alkaid2077/p/21169603",
+      "headline": "【RAG扫盲系列&amp;#183;3】从零开始构建你的RAG项目第二弹：API 调用大模型问答",
+      "description": "在大模型应用开发中，除了本地推理（如 vLLM、transformers），API 调用是更常见、更轻量的方式。本文以通义千问（DashScope 兼容 OpenAI API）为例，展示如何完成一次完整的 API 调用。 一、为什么选择 API 调用 轻量：无需本地部署 GPU，只需一行请求即可调用",
+      "image": [
+        
+      ],
+      "author": {
+        "@type": "Person",
+        "@id": "https://www.cnblogs.com/Alkaid2077/",
+        "name": "Alkaid2077",
+        "url": "https://www.cnblogs.com/Alkaid2077/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "@id": "https://www.cnblogs.com/",
+        "name": "博客园",
+        "url": "https://www.cnblogs.com/"
+      },
+      "datePublished": "2026-07-19T18:01:00.0000000&#x2B;08:00",
+      "dateModified": "2026-07-19T18:01:00.0000000&#x2B;08:00",
+      "wordCount": "4124",
+      "isPartOf": {
+        "@type": "Blog",
+        "@id": "https://www.cnblogs.com/Alkaid2077/",
+        "name": "Alkaid2077",
+        "publisher": {
+          "@type": "Organization",
+          "@id": "https://www.cnblogs.com/",
+          "name": "博客园"
+        }
+      }
+    }
+    </script>
+
+    <script>
+        var currentBlogId = 872921;
+        var currentBlogApp = 'Alkaid2077';
+        var isLogined = false;
+        var isBlogOwner = false;
+        window.isCorp = false;
+        window.skinName = 'BlackLowKey';
+        var visitorUserId = '';
+        window.hasCustomScript = false;
+        window.cb_enable_mathjax = false;
+        window.mathEngine = 1;
+        window.codeHighlightEngine = 1;
+        window.enableCodeLineNumber = false;
+        window.codeHighlightTheme = 'cnblogs';
+        window.darkModeCodeHighlightTheme = 'vs2015';
+        window.isDarkCodeHighlightTheme = false;
+        window.isDarkModeCodeHighlightThemeDark = true;
+        window.isDisableCodeHighlighter = false;
+        window.enableCodeThemeTypeFollowSystem = false;
+        window.enableMacStyleCodeBlock = false;        
+    </script>
+        <script>
+            window.currentPostId = 21169603;
+            window.currentPostDateAdded = '2026-07-19 18:01';
+        </script>
+    <script src="https://assets.cnblogs.com/scripts/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn-www.cnblogs.com/js/blog-common.min.js?v=GGk8zvD4OnmGj3IcByUKkbPn8ed-LU8hdJiVLyd2DTM"></script>
+    
+</head>
+<body class="skin-blacklowkey has-navbar">
+    <a name="top"></a>
+    <div id="top_nav" class="navbar forpc">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园" role="banner">
+                        <img src="//assets.cnblogs.com/logo.svg" alt="博客园logo" />
+                    </a>
+                </li>
+                <li><a href="https://cnblogs.vip/">会员</a></li>
+                <li><a href="https://cnblogs.vip/store">周边</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="countClicks('nav', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="countClicks('nav', 'skin-navbar-q')">博问</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="countClicks('nav', 'skin-navbar-ing')">闪存</a></li>                
+                <li><a href="https://www.cnblogs.com/cmt/p/19316348">赞助商</a></li>
+                <li><a href="https://chat2db-ai.com/" target="_blank">Chat2DB</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search dropdown" action="https://zzk.cnblogs.com/s" method="get" role="search">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="search" tabindex="3" autocomplete="off" />
+                        <button id="zzk_search_button" onclick="window.navbarSearchManager.triggerActiveOption()">
+                            <img id="search_icon" class="focus-hidden" src="//assets.cnblogs.com/icons/search.svg" alt="搜索" />
+                            <img class="hidden focus-visible" src="//assets.cnblogs.com/icons/enter.svg" alt="搜索" />
+                        </button>
+                        <ul id="navbar_search_options" class="dropdown-menu quick-search-menu">
+                            <li tabindex="0" class="active" onclick="zzkSearch(event, document.getElementById('zzk_search_input').value)">
+                                <div class="keyword-wrapper">
+                                    <img src="//assets.cnblogs.com/icons/search.svg" alt="搜索" />
+                                    <div class="keyword"></div>
+                                </div>
+                                <span class="search-area">所有博客</span>
+                            </li>
+                                    <li tabindex="1" onclick="zzkBlogSearch(event, 'Alkaid2077', document.getElementById('zzk_search_input').value)">
+                                        <div class="keyword-wrapper">
+                                            <img src="//assets.cnblogs.com/icons/search.svg" alt="搜索" />
+                                            <div class="keyword"></div>
+                                        </div>
+                                        <span class="search-area">当前博客</span>
+                                    </li>
+                        </ul>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a class="navbar-user-info navbar-blog" href="https://i.cnblogs.com/EditPosts.aspx?opt=1" alt="写随笔" title="写随笔">
+                        <img id="new_post_icon" class="navbar-icon" src="//assets.cnblogs.com/icons/newpost.svg" alt="写随笔" />
+                    </a>
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://www.cnblogs.com/my" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="//assets.cnblogs.com/icons/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="//assets.cnblogs.com/icons/message.svg" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <a id="navbar_lite_mode_indicator" data-current-page="blog" style="display: none" href="javascript:void(0)" alt="简洁模式" title="简洁模式启用，您在访问他人博客时会使用简洁款皮肤展示">
+                        <img class="navbar-icon" src="//assets.cnblogs.com/icons/lite-mode-on.svg" alt="简洁模式" />
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="//assets.cnblogs.com/icons/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://www.cnblogs.com/my">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="https://vip.cnblogs.com/my">会员中心</a>
+                            <a href="javascript:void(0)" id="navbar_lite_mode_toggle" title="简洁模式会使用简洁款皮肤显示所有博客">
+    简洁模式 <span id="navbar_lite_mode_spinner" class="hide">...</span>
+</a>
+
+                            <a href="javascript:void(0)" onclick="account.logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup">注册</a>
+                    <a class="navbar-anonymous" href="javascript:void(0);" onclick="account.login()">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+
+    <div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/Alkaid2077/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/Alkaid2077">Alkaid2077</a>
+</h1>
+<h2></h2>
+
+
+
+
+		
+	</div>
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/Alkaid2077/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/Alkaid2077">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/Alkaid2077/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			<div id="blog_stats_place_holder"><script>loadBlogStats();</script></div>
+		</div>
+	</div>
+</div>
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                <a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/Alkaid2077/p/21169603" title="发布于 2026-07-19 18:01">
+    
+
+    <span role="heading" aria-level="2">【RAG扫盲系列&#183;3】从零开始构建你的RAG项目第二弹：API 调用大模型问答</span>
+    
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                <div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+<p>在大模型应用开发中，除了本地推理（如 vLLM、transformers），API 调用是更常见、更轻量的方式。本文以通义千问（DashScope 兼容 OpenAI API）为例，展示如何完成一次完整的 API 调用。</p>
+<h1 id="一为什么选择-api-调用">一、为什么选择 API 调用</h1>
+<ul>
+<li><strong>轻量</strong>：无需本地部署 GPU，只需一行请求即可调用大模型。</li>
+<li><strong>灵活</strong>：支持多种模型（qwen-turbo / qwen-plus / qwen-max），可按需切换。</li>
+<li><strong>兼容</strong>：DashScope 提供了 OpenAI API 兼容模式，能直接复用 LangChain、OpenAI SDK 等生态。</li>
+</ul>
+<h1 id="二准备工作配置-api-key">二、准备工作：配置 API Key</h1>
+<p>参考阿里云百炼的官方教程，注册账号后获取 API Key（国内用户需实名认证）：</p>
+<ul>
+<li><a href="https://www.alibabacloud.com/help/zh/model-studio/get-api-key" target="_blank" rel="noopener nofollow">获取并使用 API Key</a></li>
+</ul>
+<p>⚠️ <mark><strong>安全提示</strong></mark>：为了安全和复用性，建议根据官方教程通过系统环境变量或 .env 文件配置 API Key，避免在代码中明文写入密钥。若项目公开，请务必在提交前移除或打码。本文为帮助读者迅速复现，采取了在代码中直接放入 API Key 的方式，并对其作打码处理。</p>
+<h1 id="三大模型调用最小可运行示例">三、大模型调用最小可运行示例</h1>
+<pre><code class="language-python">from langchain_openai import ChatOpenAI
+import os
+
+os.environ["DASHSCOPE_API_KEY"] = 'sk-xx' # 替换为你的 API Key
+
+chat = ChatOpenAI(
+    model="qwen-plus",   # 可选 qwen-turbo / qwen-max
+    api_key=os.environ["DASHSCOPE_API_KEY"], 
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1", 
+    #若为国际版则改为 https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+    temperature=0
+)
+
+resp = chat.invoke("温度是什么？")
+print(resp.content)
+</code></pre>
+<p>如果这个代码可以让模型成功给出答案，那么则说明调用成功了。输出答案示例：</p>
+<blockquote>
+<p>温度是表示物体冷热程度的物理量，从微观角度来看，它反映了物体内部分子或原子热运动的剧烈程度。温度越高，物质内部粒子（如分子、原子）的无规则运动就越剧烈；温度越低，粒子的运动就越缓慢。</p>
+</blockquote>
+<h1 id="四结合-rag-的调用示例">四、结合 RAG 的调用示例</h1>
+<h2 id="1-代码示例">1. 代码示例</h2>
+<p>在 RAG 场景中，API 调用通常和我们上次生成的那种向量库结合。示例：</p>
+<pre><code class="language-python">from langchain_community.embeddings import ModelScopeEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder
+from langchain_core.messages import HumanMessage
+from langchain_openai import ChatOpenAI
+from operator import itemgetter
+import os
+
+# 1. 加载 embedding 模型和向量库
+try:
+    # 加载embedding模型 （用于将query向量化）
+    embeddings = ModelScopeEmbeddings(model_id='iic/nlp_corom_sentence-embedding_chinese-base')
+    #加载 FAISS 向量库 （用于知识召回）
+    vector_db = FAISS.load_local('faiss_index/LLM', embeddings, allow_dangerous_deserialization=True) # 替换为你的向量库路径
+    # allow_dangerous_deserialization=True 仅在本地加载向量库时使用，请勿在不可信环境下启用
+# 添加异常处理
+except Exception as e:
+    print(f"模型或向量库加载失败: {str(e)}") 
+    exit(1)
+
+# 2. 创建检索器 Retriever
+# 检索器将 query 转为向量并返回最相似文档片段
+retriever = vector_db.as_retriever(search_kwargs={"k": 5}) # 设置返回的相关相似对最高的模块数量为 5
+
+# 3. 配置 API Key，初始化 Chat 模型
+# 此处使用阿里云达观智能 DashScope 平台的模型接口
+os.environ["DASHSCOPE_API_KEY"] = 'sk-xx' # 替换为你的 API Key
+
+chat = ChatOpenAI(
+    model="qwen-plus",   # 按照需要更换模型名称
+    api_key=os.environ["DASHSCOPE_API_KEY"], 
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1", 
+    #若为国际版则改为 https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+    temperature=0
+)
+
+# 4. Prompt模板
+system_prompt = SystemMessagePromptTemplate.from_template('你是一个有帮助的助手。') # 系统提示
+user_prompt = HumanMessagePromptTemplate.from_template(''' 
+只基于以下内容回答问题，不要使用你在训练中学到的知识:
+
+{context}
+
+问题: {query}
+''') # 用户提示
+full_chat_prompt = ChatPromptTemplate.from_messages( 
+    [system_prompt, MessagesPlaceholder(variable_name="chat_history"), user_prompt]) # 构建完整的聊天提示模板
+
+# 5. 构建对话链 Chat chain
+chat_chain = {
+                 "context": itemgetter("query") | retriever,
+                 "query": itemgetter("query"),
+                 "chat_history": itemgetter("chat_history"),
+             } | full_chat_prompt | chat 
+
+# 6. 开始对话
+chat_history = [] # 初始化对话历史
+while True:
+    query = input("请输入问题（输入 exit 退出）：")
+    if query.lower() == "exit":
+        break 
+    response = chat_chain.invoke({'query': query, 'chat_history': chat_history}) # 获取模型响应
+    chat_history.extend((HumanMessage(content=query), response)) # 更新对话历史
+    print("AI:", response.content)
+    chat_history = chat_history[-20:]  # 保留最近 20 条消息
+</code></pre>
+<h2 id="2-代码中需要手动修改的部分">2. 代码中需要手动修改的部分</h2>
+<ul>
+<li>向量库地址</li>
+<li>调用模型名称</li>
+<li>自己的 API Key</li>
+<li>base url 地址</li>
+</ul>
+<h2 id="3-预期输出结果示例">3. 预期输出结果示例</h2>
+<p>调用模型后，会出现 input 的界面，仍旧提问为：“温度是什么？” 示例回答如下：</p>
+<blockquote>
+<p>温度（Temperature）是介于0到1之间的值，用于影响模型生成文本时的随机性。低温 设置强调具有高确定性的单一首选预测，使模型倾向于选择高概率的下一个词；而高温设置则增加输出的多样性与创造性。当温度设置得极高（高于1，通常在10的量级），温度的影响变得不重要，此时更多依赖Top-K或Top-P等采样标准来选择词汇。</p>
+</blockquote>
+<p>说明模型根据文档内容回答成功。</p>
+<h2 id="4-常用通义千问模型推荐">4. 常用通义千问模型推荐</h2>
+<table>
+<thead>
+<tr>
+<th>模型名</th>
+<th>特点</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>qwen-turbo</td>
+<td>快速、成本低</td>
+<td>测试或轻任务</td>
+</tr>
+<tr>
+<td>qwen-plus</td>
+<td>平衡性能与成本</td>
+<td>通用应用</td>
+</tr>
+<tr>
+<td>qwen-max</td>
+<td>精度最高</td>
+<td>需要复杂推理的场景</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+<div class="clear"></div>
+<div id="blog_post_info_block" role="contentinfo" class="post-meta-container">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date" data-last-update-days="0" data-date-updated="2026-07-19 18:01">2026-07-19 18:01</span>&nbsp;
+<a href="https://www.cnblogs.com/Alkaid2077">Alkaid2077</a>&nbsp;
+阅读(<span id="post_view_count">23</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(21169603);return false;">收藏</a>&nbsp;
+<a href="https://report.cnblogs.com?targetLink=https%3A%2F%2Fwww.cnblogs.com%2FAlkaid2077%2Fp%2F21169603&targetId=21169603&targetType=0" target="_blank">举报</a>
+</div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script>
+    var cb_entryId = 21169603, cb_entryCreatedDate = '2026-07-19 18:01', cb_postType = 1, cb_postTitle = '【RAG扫盲系列&#183;3】从零开始构建你的RAG项目第二弹：API 调用大模型问答';
+    var allowComments = true, cb_blogId = 872921, cb_blogApp = 'Alkaid2077', cb_blogUserGuid = '8ee0998a-ade0-4b17-a078-08ded10163c9';
+    mermaidRender.render()
+    markdown_highlight()
+    zoomManager.apply("#cnblogs_post_body img:not(.code_img_closed):not(.code_img_opened)");    
+</script>
+<a id="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav">
+        <div class="comment-nav-right">
+            <span id="span_refresh_tips"></span><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a>
+        </div>
+    </div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+        <div id="cnblogs_ch"></div>
+    <div id="opt_under_post"></div>
+        <div id="blog_c1" class="under-post-card below-post-card">
+            <a href="https://www.volcengine.com/activity/codingplan?utm_campaign=hw&amp;utm_content=hw&amp;utm_medium=devrel_tool_web&amp;utm_source=OWO&amp;utm_term=cnblogs" rel="nofollow" target="_blank" onclick="countCreativeClicks('C1-volcengine-codingplan')">
+                <img src="https://img2024.cnblogs.com/blog/35695/202606/35695-20260609221536870-1777800795.webp" onload="countCreativeImpressions('C1-volcengine-codingplan')" alt="" style="width:300px!important;height:250px!important;min-width:300px!important;max-width:300px!important;" />
+                <span id="c1_impression" style="display:none"></span>
+            </a>
+        </div>
+    <div id="under_post_card1"></div>
+    <div id="related_posts_card"></div>
+    <div id="under_post_card2"></div>
+    <div id="HistoryToday" class="under-post-card below-post-card"></div>
+    <script type="text/javascript">
+        var commentManager = new blogCommentManager();
+        commentManager.renderComments(0);
+        fixPostBody();
+        window.footnoteTipManager.generateFootnoteTips();
+
+            window.tocManager.displayDisableTocTips = false;
+            window.tocManager.generateToc();
+            
+            setTimeout(function() { countViews(cb_blogId, cb_entryId); }, 50);
+            
+            deliverT2();
+            deliverC1C2();
+            loadNewsAndKb();
+            
+            LoadPostCategoriesTags(cb_blogId, cb_entryId);
+            
+            LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+            GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+            loadOptUnderPost();
+            GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+                </script>
+</div>
+
+	</div>
+	</div>
+	<div id="sideBar">
+		<div id="sideBarMain">
+			<div id="sidebar_news" class="newsItem">
+    <h3 class="catListTitle">公告</h3>
+<div id="blog-news" class="sidebar-news">
+    <div id="sidebar_news_container">
+    </div>
+</div>
+<script>loadBlogNews();</script>
+
+
+</div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+					<script>loadBlogSideColumn()</script>
+			</div>			
+		</div>
+	</div>
+	<div class="clear"></div>
+	</div>
+	<div class="clear"></div>
+	<div id="footer">
+		<a href="https://www.cnblogs.com/" id="footer_site_link" class="footer-brand">博客园</a>
+<span class="footer-copyright"> &nbsp;&copy;&nbsp; 2004-2026</span>
+<br /><span class="footer-icp">
+    <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010602011771"><img src="//assets.cnblogs.com/images/ghs.png" />浙公网安备 33010602011771号</a>
+    <a href="https://beian.miit.gov.cn" target="_blank">浙ICP备2021040463号-3</a>
+</span>
+
+
+
+	</div>
+</div>
+
+
+
+    
+
+    <input type="hidden" id="antiforgery_token" value="CfDJ8Ow5-In01nBEvFwaadRGjqEObTozVYnr8L8cp_ZZyK77VDKUfumjSibU1sedfiG0VPb4OZ5S9_gUpoz_m_GLURngnnW9KQjFQc5K5Bx64ibpw8AzzIYYCyWKF1co3GR9dOqYp43MjtmEw3Ohy0mEeIY" />
+    <script defer src="https://hm.baidu.com/hm.js?866c9be12d4a814454792b1fd0fed295"></script>
+</body>
+</html>
