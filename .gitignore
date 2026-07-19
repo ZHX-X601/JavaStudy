@@ -1,0 +1,9 @@
+# 编辑器配置
+.obsidian/
+
+# IDE 配置
+.idea/
+code/.idea/
+
+# 脚本文件
+git-push.bat
