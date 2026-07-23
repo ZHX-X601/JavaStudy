@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOM</title>
+</head>
+<body>
+  <h1>DOM</h1>
+  <p>DOM是Document Object Model的缩写，是浏览器对HTML文档的一种表示。</p>
+  <p>DOM树是一种树状结构，每个节点都是一个对象，通过对象可以访问到文档中的所有元素。</p>
+  <p>DOM树的根节点是document对象，通过document对象可以访问到文档中的所有元素。</p>
+
+
+  <script>
+
+    // 通过querySelector方法获取h1元素
+    // 参数：选择器字符串
+
+    // 通过querySelector方法获取第一个p元素
+    let a=document.querySelector('p');
+
+    // 通过querySelectorAll方法获取所有p元素
+    let b=document.querySelectorAll('p');
+    // 遍历所有p元素，将每个元素的字体颜色设为红色
+    for(let x of b){
+      x.style.color='red';
+    }
+
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS语法</title>
+</head>
+<body>
+  
+  <script>
+    // 变量
+    let a = 10;
+    console.log(a);
+    console.log(typeof a);
+
+    const b = 'hello world';
+    console.log(b);
+    console.log(typeof b);
+
+    // 模板字符串
+    console.log(`a的值是${a},b的值是${b}`);
+
+    // 函数
+    function sayHello(){
+      console.log('sayHello函数：hello world');
+    }
+    sayHello();
+
+    // 函数参数
+    function add1(a, b){
+      console.log(`add1()函数：a的值是${a},b的值是${b},a+b=${a+b}`);
+    }
+    add1(1,2);
+
+    //匿名函数
+    let add2=function(a, b){
+      console.log(`add2()函数：a的值是${a},b的值是${b},a+b=${a+b}`);
+    }
+    add2(1,2);
+
+    //箭头函数,中的this指向父对象
+    let add3=(a, b)=>{
+      console.log(`add3()函数：a的值是${a},b的值是${b},a+b=${a+b}，this指向${this}`);
+    }
+    add3(1,2);
+
+    // 对象
+    let stu={
+      name:'张三',
+      age:18,
+      sex:'男'
+    }
+    console.log(stu);
+    console.log(stu.name);
+    console.log(stu.age);
+    console.log(stu.sex);
+
+    // 对象转换为JSON字符串
+    let json1=JSON.stringify(stu);
+    //{"name":"张三","age":18,"sex":"男"}就是JSON字符串，key必须用双引号括起来
+    console.log(json1);
+
+    // JSON字符串转换为对象
+    let stu2=JSON.parse(json1);
+    console.log(stu2);
+    console.log(typeof stu2);
+
+  </script>
+</body>
+</html>

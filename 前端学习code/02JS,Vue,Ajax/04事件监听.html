@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>事件监听</title>
+  <style>
+    #form-container {
+      box-sizing: border-box;
+      margin: 0 auto;
+      width: 70%;
+      padding: 0;
+      display: flex;
+      /* 设置主轴为垂直方向 */
+      flex-direction: column;
+    }
+    #form-container * {
+      margin: 10px auto;
+    }
+    #form-container table {
+      margin: 20px auto;
+      width: 80%;
+    }
+  </style>
+</head>
+<body>
+  <div id="form-container">
+    <form action="#",method="get">
+      <input type="text" placeholder="请输入用户名">
+      <input type="password" placeholder="请输入密码">
+      <input id="login-btn" type="submit" value="登录">
+    </form>
+    <!-- 表格 -->
+    <table border="1">
+      <!-- 表头 -->
+      <thead>
+        <tr>
+          <th>姓名</th>
+          <th>年龄</th>
+          <th>性别</th>
+        </tr>
+      </thead>
+      <!-- 表体 -->
+      <tbody>
+        <tr>
+          <td>张三</td>
+          <td>18</td>
+          <td>男</td>
+        </tr>
+        <tr>
+          <td>李四</td>
+          <td>20</td>
+          <td>女</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+
+    // 为登录按钮添加 点击事件
+    document.querySelector("#login-btn").addEventListener("click", function(event) {
+      
+      console.log("登录按钮被点击了");
+    });
+    // 鼠标移入表格行时，改变背景颜色为黄色
+    let tableRows = document.querySelectorAll("tr");
+    for(let e of tableRows) {
+      e.addEventListener("mouseenter", function() {
+        console.log("鼠标移入了表格行");
+        this.style.backgroundColor = "rgb(217,233,247)";
+      });
+    }
+    // 鼠标移出表格行时，改变背景颜色为白色
+    for(let e of tableRows) {
+      e.addEventListener("mouseleave", function() {
+        console.log("鼠标移出了表格行");
+        this.style.backgroundColor = "white";
+      });
+    }
+
+    // 获得焦点事件：当鼠标点击输入框时，改变背景颜色为黄色
+    document.querySelector("input").addEventListener("focus", function() {
+      this.style.backgroundColor = "rgb(217,233,247)";
+    });
+
+    // 失去焦点事件：当鼠标点击输入框外部时，改变背景颜色为白色
+    document.querySelector("input").addEventListener("blur", function() {
+      this.style.backgroundColor = "white";
+    });
+
+    //键盘事件
+    document.querySelector("input").addEventListener("keydown", function(event) {
+      console.log("键盘被按下了");
+    });
+
+    // 键盘事件：当键盘被抬起了时，改变背景颜色为黄色
+    document.querySelector("input").addEventListener("keyup", function(event) {
+      console.log("键盘被抬起了");
+      event.target.style.backgroundColor = "rgb(217,233,247)";
+    });
+
+
+    //表单事件,当表单有输入时，改变背景颜色为黄色
+    document.querySelector("form").addEventListener("input", function() {
+      console.log("表单有输入");
+    });
+
+    // 表单提交事件：当表单被提交时，改变背景颜色为白色
+    document.querySelector("form").addEventListener("submit", function() {
+      console.log("表单被提交了");
+    });
+
+
+
+
+  </script>
+  
+</body>
+</html>
