@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    /* 导航栏容器样式 */
+    .navbar {
+      background-color: rgb(132, 128, 128);
+      padding: 0 15px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-direction: row;
+    }
+    .navbar h1 {
+      color: #ffffff;
+      margin: 0;
+      font-size: 30px;
+      font-weight: bold;
+      font-family: "楷体", "KaiTi", "STKaiti", serif;
+    }
+    .navbar a {
+      color: white;
+      padding: 8px 16px;
+      text-decoration: none;
+      border-radius: 4px;
+      border: 1px solid white;
+    }
+    /* 查询表单容器样式 */
+    .search-form {
+      width: 95%;
+      margin: 20px 2px;
+      padding: 0;
+      background-color: white;
+      border-radius: 0; /* 方角 */
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      box-sizing: border-box;
+    }
+    /* 查询项样式 */
+    .search-item {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      width: 28%;
+      margin-right: 2%; /* 查询项之间的间距 */
+    }
+    /* 标签样式 */
+    .search-item label {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      font-weight: 500;
+      width: 100%;
+      white-space: nowrap;
+    }
+    /* 标签文字样式 */
+    .search-item label span {
+      margin-right: 8px;
+    }
+    /* 输入框样式 */
+    .search-item input {
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      flex: 1;
+      box-sizing: border-box;
+      min-width: 80px;
+    }
+    /* 下拉列表样式 */
+    .search-item select {
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      flex: 1;
+      box-sizing: border-box;
+      min-width: 80px;
+    }
+    /* 按钮容器样式 */
+    .search-buttons {
+      min-width: 3em;
+      height: 100%;
+      margin-left: auto;
+      display: flex;
+      gap: 10px;
+    }
+    .search-buttons button {
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px; /* 增大字体 */
+      height: 100%; 
+      width: auto; /* 固定宽度 */
+      box-sizing: border-box;
+    }
+    .btn-search {
+      margin: 0;
+      background-color: #2196F3;
+      color: white;
+    }
+    .btn-clear {
+      margin: 0;
+      background-color: #9e9e9e;
+      color: white;
+    }
+    /* 结果表格样式 */
+    .result-table {
+      margin: 0;
+      background-color: white;
+      border-radius: 0; /* 方角 */
+      border: 1px solid #e0e0e0;
+      overflow: hidden;
+    }
+    .result-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .result-table th {
+      background-color: #f5f5f5;
+      padding: 12px 15px;
+      text-align: left;
+      font-weight: bold;
+      color: #333;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    .result-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    /* 鼠标悬停样式,我已经在事件监听methods中实现了 */
+    /* .result-table tr:hover {
+      background-color: #fafafa;
+    } */
+    .result-table .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .result-table .action-btn {
+      padding: 4px 10px;
+      border: none; /* 无边框 */
+      background: none; /* 无背景 */
+      font-size: 12px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .result-table .edit-btn {
+      color: #2196F3; /* 蓝色文字 */
+    }
+    .result-table .delete-btn {
+      color: #f44336; /* 红色文字 */
+    }
+    /* 页脚版权区域样式 */
+    .footer {
+      background-color: rgb(132, 128, 128); /* 与导航栏相同的灰色背景 */
+      color: white; /* 白色文字 */
+      text-align: center; /* 居中对齐 */
+      padding: 20px; /* 内边距 */
+      margin-top: 50px; /* 与上方内容的间距 */
+    }
+    .footer .company-name {
+      font-size: 16px; /* 公司名称字号 */
+      margin-bottom: 8px; /* 与版权信息的间距 */
+    }
+    .footer .copyright {
+      font-size: 14px; /* 版权信息字号 */
+      opacity: 0.8; /* 稍微透明 */
+    }
+    #container {
+      width: 80%;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div class="navbar">
+      <h1>Tlias智能学习辅助系统</h1>
+      <a href="#">退出登录</a>
+    </div>
+    {{searchForm}}
+    <!-- v-model指令用于绑定表单元素的值到Vue实例的属性,是Vue的双向绑定指令
+     注意：v-model指令只能绑定到表单项，不能绑定form表单 -->
+    <form class="search-form" action="/search" method="post">
+      <div class="search-item">
+        <label><span>姓名：</span><input v-model="searchForm.name" type="text" name="name" placeholder="请输入姓名"></label>
+      </div>
+      <div class="search-item">
+        <label><span>性别：</span>
+          <select v-model="searchForm.gender" name="gender">
+            <option value="">请选择</option>
+            <option value="1">男</option>
+            <option value="2">女</option>
+          </select>
+        </label>
+      </div>
+      <div class="search-item">
+        <label><span>职位：</span>
+          <select v-model="searchForm.position" name="position">
+            <option value="">请选择</option>
+            <option value="1">前端工程师</option>
+            <option value="2">后端工程师</option>
+            <option value="3">测试工程师</option>
+            <option value="4">产品经理</option>
+          </select>
+        </label>
+      </div>
+      <div class="search-buttons">
+        <!-- @click="handleSearch" 表示点击查询按钮时，调用handleSearch方法 -->
+        <button @click="handleSearch" type="button" class="btn-search">查询</button>
+        <button @click="handleClear" type="button" class="btn-clear">清空</button>
+      </div>
+    </form>
+    
+    <div class="result-table">
+      <table>
+        <thead>
+          <tr>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>头像</th>
+            <th>所属部门</th>
+            <th>职位</th>
+            <th>入职日期</th>
+            <th>最后操作时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- v-on指令用于绑定事件，这里用于绑定鼠标悬停事件
+            也可以写为@mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave"来绑定鼠标悬停事件 -->
+          <tr v-on:mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" v-for="(item, index) in employees" :key="item.id">
+            <td>{{item.name}}</td>
+            <td>{{item.gender}}</td>
+            
+            <!-- v-bind:src="item.avatar"
+             v-bind指令用于动态绑定属性值，这里用于绑定图片的src属性
+             也可以写为:src="item.avatar"来绑定图片的src属性 -->
+            <td><img :src="item.avatar" alt="头像" class="avatar"></td>
+            <td>{{item.department}}</td>
+            <td>
+              <!-- v-if指令用于根据条件显示元素，这里用于根据职位显示不同的文字
+               也可以用v-show指令
+               二者的区别在于v-if指令会根据条件判断是否加载元素，
+               而v-show指令会根据条件判断是否隐藏元素 -->
+              <span v-if="item.position == 1">前端工程师</span>
+              <span v-else-if="item.position == 2">后端工程师</span>
+              <span v-else-if="item.position == 3">测试工程师</span>
+              <span v-else>产品经理</span>
+            </td>
+            <td>{{item.hireDate}}</td>
+            <td>{{item.lastOperateTime}}</td>
+            <td>
+              <button class="action-btn edit-btn">编辑</button>
+              <button class="action-btn delete-btn">删除</button>
+            </td>
+        
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- 页脚版权区域 -->
+    <div class="footer">
+      <div class="company-name">江苏传智播客教育科技股份有限公司</div>
+      <div class="copyright">版权所有 Copyright 2006-2024 All Rights Reserved</div>
+    </div>
+  </div>
+
+  <script type="module">
+    // 引入Vue3的模块
+    import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+    createApp({
+      data() {
+        return {
+
+        employees: [
+          {
+            id: 1,
+            name: '张三',
+            gender: '男',
+            avatar: './img/1.png',
+            department: '技术部',
+            position: 1,
+            hireDate: '2024-01-15',
+            lastOperateTime: '2024-07-22 14:30:00'
+          },
+          {
+            id: 2,
+            name: '李四',
+            gender: '女',
+            avatar: './img/1.png',
+            department: '人事部',
+            position: 2,
+            hireDate: '2024-03-20',
+            lastOperateTime: '2024-07-21 10:15:00'
+          },
+          {
+            id: 3,
+            name: '王五',
+            gender: '男',
+            avatar: './img/1.png',
+            department: '财务部',
+            position: 3,
+            hireDate: '2024-02-10',
+            lastOperateTime: '2024-07-20 16:45:00'
+          },
+          {
+            id: 4,
+            name: '赵六',
+            gender: '女',
+            avatar: './img/1.png',
+            department: '技术部',
+            position: 4,
+            hireDate: '2024-04-05',
+            lastOperateTime: '2024-07-19 09:20:00'
+          },
+          {
+            id: 5,
+            name: '钱七',
+            gender: '男',
+            avatar: './img/1.png',
+            department: '设计部',
+            position: 3,
+            hireDate: '2024-05-18',
+            lastOperateTime: '2024-07-18 14:50:00'
+          },
+          {
+            id: 6,
+            name: '孙八',
+            gender: '女',
+            avatar: './img/1.png',
+            department: '产品部',
+            position: 4,
+            hireDate: '2024-06-10',
+            lastOperateTime: '2024-07-17 11:30:00'
+          },
+          {
+            id: 7,
+            name: '周九',
+            gender: '男',
+            avatar: './img/1.png',
+            department: '测试部',
+            position: 1,
+            hireDate: '2024-07-01',
+            lastOperateTime: '2024-07-16 16:00:00'
+          },
+          {
+            id: 8,
+            name: '吴十',
+            gender: '女',
+            avatar: './img/1.png',
+            department: '项目部',
+            position: 2,
+            hireDate: '2024-01-20',
+            lastOperateTime: '2024-07-15 10:45:00'
+          }
+        ]
+        ,
+        searchForm:{
+          name: '',
+          gender: '',
+          position: ''
+        }
+        }
+      }
+      ,
+      // 绑定鼠标悬停事件
+      methods: {
+        handleMouseEnter(event) {
+          // event是事件对象，包含了鼠标位置、触发的元素等所有信息
+          // event.currentTarget表示触发事件的元素
+          event.currentTarget.style.backgroundColor = 'rgb(196,212,225)';
+        },
+        handleMouseLeave(event) {
+          // event是事件对象，包含了鼠标位置、触发的元素等所有信息
+          // event.currentTarget表示触发事件的元素
+          event.currentTarget.style.backgroundColor = 'white';
+        },
+        handleSearch(){
+
+        },
+        handleClear(){
+          this.searchForm = {
+            name: '',
+            gender: '',
+            position: ''
+          }
+          this.handleSearch();
+        },
+      }
+    }).mount('#container')
+
+    // const tableRows = document.querySelectorAll('.result-table table tbody tr');
+    // for (let i = 0; i < tableRows.length; i++) {
+    //   const row = tableRows[i];
+    //   row.addEventListener('mouseenter', function() {
+    //     this.style.backgroundColor = 'rgb(217, 233, 247)';
+    //   });
+    //   row.addEventListener('mouseleave', function() {
+    //     this.style.backgroundColor = '';
+    //   });
+    // }
+  </script>
+
+</body>
+</html>

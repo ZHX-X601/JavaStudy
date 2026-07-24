@@ -138,7 +138,7 @@
     /* .result-table tr:hover {
       background-color: #fafafa;
     } */
-    .result-table .avatar {
+    .result-table .image {
       width: 40px;
       height: 40px;
       border-radius: 50%;
@@ -186,14 +186,15 @@
       <h1>Tlias智能学习辅助系统</h1>
       <a href="#">退出登录</a>
     </div>
-    
+    <!-- v-model指令用于绑定表单元素的值到Vue实例的属性,是Vue的双向绑定指令
+     注意：v-model指令只能绑定到表单项，不能绑定form表单 -->
     <form class="search-form" action="/search" method="post">
       <div class="search-item">
-        <label><span>姓名：</span><input type="text" name="name" placeholder="请输入姓名"></label>
+        <label><span>姓名：</span><input v-model="searchForm.name" type="text" name="name" placeholder="请输入姓名"></label>
       </div>
       <div class="search-item">
         <label><span>性别：</span>
-          <select name="gender">
+          <select v-model="searchForm.gender" name="gender">
             <option value="">请选择</option>
             <option value="1">男</option>
             <option value="2">女</option>
@@ -202,7 +203,7 @@
       </div>
       <div class="search-item">
         <label><span>职位：</span>
-          <select name="position">
+          <select v-model="searchForm.job" name="job">
             <option value="">请选择</option>
             <option value="1">前端工程师</option>
             <option value="2">后端工程师</option>
@@ -212,8 +213,9 @@
         </label>
       </div>
       <div class="search-buttons">
-        <button type="submit" class="btn-search">查询</button>
-        <button type="reset" class="btn-clear">清空</button>
+        <!-- @click="handleSearch" 表示点击查询按钮时，调用handleSearch方法 -->
+        <button @click="handleSearch" type="button" class="btn-search">查询</button>
+        <button @click="handleClear" type="button" class="btn-clear">清空</button>
       </div>
     </form>
     
@@ -236,25 +238,28 @@
             也可以写为@mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave"来绑定鼠标悬停事件 -->
           <tr v-on:mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" v-for="(item, index) in employees" :key="item.id">
             <td>{{item.name}}</td>
-            <td>{{item.gender}}</td>
+            <td>
+              <span v-if="item.gender == 1">男</span>
+              <span v-else-if="item.gender == 2">女</span>
+            </td>
             
-            <!-- v-bind:src="item.avatar"
+            <!-- v-bind:src="item.image"
              v-bind指令用于动态绑定属性值，这里用于绑定图片的src属性
-             也可以写为:src="item.avatar"来绑定图片的src属性 -->
-            <td><img :src="item.avatar" alt="头像" class="avatar"></td>
+             也可以写为:src="item.image"来绑定图片的src属性 -->
+            <td><img :src="item.image" alt="头像" class="image"></td>
             <td>{{item.department}}</td>
             <td>
               <!-- v-if指令用于根据条件显示元素，这里用于根据职位显示不同的文字
                也可以用v-show指令
                二者的区别在于v-if指令会根据条件判断是否加载元素，
                而v-show指令会根据条件判断是否隐藏元素 -->
-              <span v-if="item.position == 1">前端工程师</span>
-              <span v-else-if="item.position == 2">后端工程师</span>
-              <span v-else-if="item.position == 3">测试工程师</span>
+              <span v-if="item.job == 1">前端工程师</span>
+              <span v-else-if="item.job == 2">后端工程师</span>
+              <span v-else-if="item.job == 3">测试工程师</span>
               <span v-else>产品经理</span>
             </td>
-            <td>{{item.hireDate}}</td>
-            <td>{{item.lastOperateTime}}</td>
+            <td>{{item.entrydate}}</td>
+            <td>{{item.updatetime}}</td>
             <td>
               <button class="action-btn edit-btn">编辑</button>
               <button class="action-btn delete-btn">删除</button>
@@ -272,6 +277,8 @@
     </div>
   </div>
 
+  <!-- 引入axios库 -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script type="module">
     // 引入Vue3的模块
     import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
@@ -279,93 +286,16 @@
       data() {
         return {
 
-        employees: [
-          {
-            id: 1,
-            name: '张三',
-            gender: '男',
-            avatar: './img/1.png',
-            department: '技术部',
-            position: 1,
-            hireDate: '2024-01-15',
-            lastOperateTime: '2024-07-22 14:30:00'
-          },
-          {
-            id: 2,
-            name: '李四',
-            gender: '女',
-            avatar: './img/1.png',
-            department: '人事部',
-            position: 2,
-            hireDate: '2024-03-20',
-            lastOperateTime: '2024-07-21 10:15:00'
-          },
-          {
-            id: 3,
-            name: '王五',
-            gender: '男',
-            avatar: './img/1.png',
-            department: '财务部',
-            position: 3,
-            hireDate: '2024-02-10',
-            lastOperateTime: '2024-07-20 16:45:00'
-          },
-          {
-            id: 4,
-            name: '赵六',
-            gender: '女',
-            avatar: './img/1.png',
-            department: '技术部',
-            position: 4,
-            hireDate: '2024-04-05',
-            lastOperateTime: '2024-07-19 09:20:00'
-          },
-          {
-            id: 5,
-            name: '钱七',
-            gender: '男',
-            avatar: './img/1.png',
-            department: '设计部',
-            position: 3,
-            hireDate: '2024-05-18',
-            lastOperateTime: '2024-07-18 14:50:00'
-          },
-          {
-            id: 6,
-            name: '孙八',
-            gender: '女',
-            avatar: './img/1.png',
-            department: '产品部',
-            position: 4,
-            hireDate: '2024-06-10',
-            lastOperateTime: '2024-07-17 11:30:00'
-          },
-          {
-            id: 7,
-            name: '周九',
-            gender: '男',
-            avatar: './img/1.png',
-            department: '测试部',
-            position: 1,
-            hireDate: '2024-07-01',
-            lastOperateTime: '2024-07-16 16:00:00'
-          },
-          {
-            id: 8,
-            name: '吴十',
-            gender: '女',
-            avatar: './img/1.png',
-            department: '项目部',
-            position: 2,
-            hireDate: '2024-01-20',
-            lastOperateTime: '2024-07-15 10:45:00'
-          }
-        ]
-
+        employees:[],
+        searchForm:{
+          name: '',
+          gender: '',
+          job: ''
+        }
         }
       }
       ,
-      // 绑定鼠标悬停事件
+      // 绑定鼠标事件
       methods: {
         handleMouseEnter(event) {
           // event是事件对象，包含了鼠标位置、触发的元素等所有信息
@@ -376,8 +306,73 @@
           // event是事件对象，包含了鼠标位置、触发的元素等所有信息
           // event.currentTarget表示触发事件的元素
           event.currentTarget.style.backgroundColor = 'white';
-        }
+        },
+        // async异步方法
+        async handleSearch(){
+          //await异步转同步，等待axios请求完成
+          let res = await axios.get(`https://mock.apifox.cn/m1/3083103-0-default/emps/list`,{
+            params: this.searchForm
+          });
+          this.employees = res.data.data;
+
+
+          //发送GET请求
+          // axios({
+          //   url: `https://mock.apifox.cn/m1/3083103-0-default/emps/list`,
+          //   method: 'get',
+          //   // 传递查询参数
+          //   params: this.searchForm
+          // }).then((res) => {
+          //   this.employees = res.data.data;
+          // }).catch((err) => {
+          //   console.log(err);
+          // })
+
+          // 发送POST请求
+          // axios({
+          //   url: `https://mock.apifox.cn/m1/3083103-0-default/emps/update`,
+          //   method: 'post',
+          //   // 传递请求参数
+          //   data: this.searchForm
+          // }).then((res) => {
+          //   this.employees = res.data.data;
+          // }).catch((err) => {
+          //   console.log(err);
+          // })
+
+          // 发送GET请求
+          // axios.get(`https://mock.apifox.cn/m1/3083103-0-default/emps/list`,{
+          //   params: this.searchForm
+          // }).then((res) => {
+          //   this.employees = res.data.data;
+          // }).catch((err) => {
+          //   console.log(err);
+          // })
+          // 发送POST请求
+          // axios.post(`https://mock.apifox.cn/m1/3083103-0-default/emps/update`,{
+          //   data: this.searchForm
+          // }).then((res) => {
+          //   this.employees = res.data.data;
+          // }).catch((err) => {
+          //   console.log(err);
+          // })
+
+        },
+        handleClear(){
+          this.searchForm = {
+            name: '',
+            gender: '',
+            job: ''
+          }
+          this.handleSearch();
+        },
+      },
+      // 组件挂载完成后调用
+      // 用于初始化数据、绑定事件等
+      mounted(){
+        this.handleSearch();
       }
+
     }).mount('#container')
 
     // const tableRows = document.querySelectorAll('.result-table table tbody tr');
